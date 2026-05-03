@@ -13,7 +13,6 @@ if "google" in st.secrets:
 # --- CONFIGURAÇÃO DE E-MAIL (GE Engenharia) ---
 def enviar_email_ge(dados, assunto, destinatario_final, arquivo=None):
     try:
-        # Puxando as credenciais de forma segura dos Secrets
         meu_email = "guilhermesantosenf@gmail.com"
         minha_senha = st.secrets["gmail"]["password"] 
         
@@ -47,7 +46,6 @@ def enviar_email_ge(dados, assunto, destinatario_final, arquivo=None):
 # --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="GE Engenharia | Oficial", page_icon="🏗️", layout="wide")
 
-# Banco de dados temporário (Session State)
 if 'db_pedidos' not in st.session_state:
     st.session_state['db_pedidos'] = {}
 if 'admin_logado' not in st.session_state:
@@ -77,7 +75,7 @@ with st.sidebar:
         "🔐 Área do Engenheiro"
     ])
     st.markdown("---")
-    st.markdown("### WHATSAPP (Mensagens)")
+    st.markdown("### WHATSAPP (Apenas Mensagens)")
     st.markdown('<a href="https://wa.me/5519982604724" class="wpp-btn">👤 GUILHERME</a>', unsafe_allow_html=True)
     st.markdown('<a href="https://wa.me/5519982474746" class="wpp-btn">👤 EDNALDO</a>', unsafe_allow_html=True)
 
@@ -85,7 +83,25 @@ with st.sidebar:
 
 if aba == "👥 Quem Somos":
     st.title("QUEM SOMOS")
-    st.markdown("### GE Engenharia e Construção\nReferência em Americana e região para regularização de obras e emissão de ARTs.")
+    st.markdown("""
+    ### GE Engenharia e Construção
+    Fundada com o propósito de elevar o padrão de segurança e conformidade técnica no setor da construção civil, a **GE Engenharia e Construção** é referência em desburocratização e agilidade técnica.
+    
+    Sediada em **Americana** e com atuação estratégica em todo o **Estado de São Paulo**, entregamos soluções completas que vão desde a regularização documental através de ARTs até o gerenciamento integral de obras residenciais e comerciais.
+    
+    #### Nosso Diferencial Profissional:
+    * **Expertise Técnica:** Nossa equipe aplica rigorosos critérios de engenharia para garantir a integridade estrutural e a valorização do seu patrimônio.
+    * **Agilidade Digital:** Entendemos a urgência do mercado atual. Por isso, operamos com processos otimizados para que você receba sua documentação no menor prazo possível.
+    * **Transparência e Ética:** Atuamos com clareza em todas as etapas, garantindo que sua obra esteja 100% legalizada perante os órgãos competentes e condomínios.
+    
+    #### Condomínios Atendidos na Região:
+    * ✅ Residencial Garnet
+    * ✅ Condomínio Tripoli
+    * ✅ Portal dos Nobres
+    * *E mais de 50 condomínios parceiros em Americana e Campinas.*
+    """)
+    st.divider()
+    st.write("📍 Sede: Americana - São Paulo | 🌐 Atendimento em todo o Estado.")
 
 elif aba == "🏠 Solicitar ART (Até 1h)":
     st.title("EMISSÃO DE ART EM ATÉ 1H")
@@ -111,7 +127,6 @@ elif aba == "🏠 Solicitar ART (Até 1h)":
                     st.rerun()
                 else: st.error("Preencha todos os campos obrigatórios.")
     else:
-        # BLOCO DE PAGAMENTO COM COPIA E COLA
         st.markdown("""
             <div style="background-color: #ffffff; padding: 25px; border: 3px solid #000000; text-align: center; border-radius: 10px;">
                 <h3 style="color: #000000; margin-bottom: 5px;">PAGAMENTO VIA PIX</h3>
@@ -132,7 +147,7 @@ elif aba == "🏠 Solicitar ART (Até 1h)":
                 "condo": st.session_state['dados_temp']['condo']
             }
             enviar_email_ge(st.session_state['dados_temp'], f"✅ NOVO PEDIDO - {st.session_state['dados_temp']['nome']}", "guilhermesantosenf@gmail.com", comp)
-            st.success("✅ Tudo pronto! Recebemos seu comprovante.")
+            st.success("✅ Comprovante enviado com sucesso!")
             st.session_state['dados_temp'] = None
 
 elif aba == "📋 Orçamento de Obra":
@@ -143,14 +158,14 @@ elif aba == "📋 Orçamento de Obra":
         detalhes_o = st.text_area("Descrição do Projeto")
         if st.form_submit_button("ENVIAR PARA ANÁLISE"):
             if enviar_email_ge({"nome": nome_o, "zap": zap_o, "detalhes": detalhes_o}, f"📋 ORÇAMENTO - {nome_o}", "guilhermesantosenf@gmail.com"):
-                st.success("Enviado!")
+                st.success("Enviado para análise técnica!")
 
 elif aba == "🔍 Status do Pedido":
     st.title("CONSULTAR STATUS")
     busca = st.text_input("Digite seu CPF")
     if st.button("Consultar"):
         if busca in st.session_state['db_pedidos']:
-            st.success(f"Status atual: **{st.session_state['db_pedidos'][busca]['status']}**")
+            st.success(f"Olá {st.session_state['db_pedidos'][busca]['nome']}! Status: **{st.session_state['db_pedidos'][busca]['status']}**")
         else: st.error("CPF não encontrado.")
 
 elif aba == "🔐 Área do Engenheiro":
@@ -158,7 +173,7 @@ elif aba == "🔐 Área do Engenheiro":
     if not st.session_state['admin_logado']:
         senha = st.text_input("Senha", type="password")
         if st.button("Acessar"):
-            if senha == "ge2026": # Sua senha cadastrada
+            if senha == "ge2026":
                 st.session_state['admin_logado'] = True
                 st.rerun()
     else:
@@ -166,6 +181,6 @@ elif aba == "🔐 Área do Engenheiro":
             st.session_state['admin_logado'] = False
             st.rerun()
         for cpf, info in st.session_state['db_pedidos'].items():
-            st.write(f"**Cliente:** {info['nome']} | **Status:** {info['status']}")
+            st.write(f"**Cliente:** {info['nome']} | **Condomínio:** {info['condo']} | **Status:** {info['status']}")
 
 st.markdown('<div class="footer"><b>GE ENGENHARIA E CONSTRUÇÃO</b> | Americana - SP.</div>', unsafe_allow_html=True)
