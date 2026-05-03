@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
+st.markdown('<meta name="google-site-verification" content="tZwifqB2_EGFetR2B8hrUvGWrvexjWUNNPv8DfuPGRk" />', unsafe_allow_html=True)
 
 # --- CONFIGURAÇÃO DE E-MAIL (GE Engenharia) ---
 def enviar_email_ge(dados, assunto, destinatario_final, arquivo=None, eh_cliente=False):
